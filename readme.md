@@ -94,48 +94,6 @@ npm install
 cd ..
 ```
 
-### Step 2: Create Virtual Environment (Backend & ML)
-
-```bash
-# Create a Python virtual environment
-python -m venv venv310
-
-# Activate it
-# On Windows:
-venv310\Scripts\activate
-
-# On Mac/Linux:
-source venv310/bin/activate
-```
-
-### Step 3: Install Backend & ML Dependencies
-
-```bash
-# Install PyTorch (choose ONE based on your system)
-
-# If you have an NVIDIA GPU:
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
-
-# If you only have CPU:
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
-
-# Then install all other dependencies:
-pip install -r requirements.txt
-```
-
-### Step 4: Install Frontend Dependencies
-
-```bash
-# Navigate to frontend folder
-cd frontend
-
-# Install Node packages
-npm install
-
-# Return to root
-cd ..
-```
-
 ---
 
 ## 📁 PART 2: Data Setup (IMPORTANT!)
