@@ -102,38 +102,12 @@ Since raw images are NOT in git, you must prepare them locally. This project use
 
 ### Option A: Converting LettuCeV Dataset (Recommended)
 
-If you have the LettuCeV dataset with YOLO annotations:
+If you have the LettuCeV dataset with YOLO annotations, the conversion script will automatically classify and prepare the data. First, update the dataset path in the script, then proceed to PART 3 STEP 0 to run it.
 
-**Step 1: Update the dataset path in the conversion script**
-
-Open `ml/scripts/convert_dataset.py` and update this line:
+Update `ml/scripts/convert_dataset.py`:
 
 ```python
 DATASET_DIR = Path(r"C:\Users\Chait\Downloads\LettuCeV_dataset")  # ← Change to your dataset path
-```
-
-**Step 2: Run the converter**
-
-```bash
-# Make sure virtual environment is activated
-python ml/scripts/convert_dataset.py
-```
-
-**What this does:**
-- Reads YOLO annotation files (labels/ folder)
-- Automatically classifies roots as:
-  - **Healthy** (class 2 in YOLO = bright white roots)
-  - **Diseased** (class 1 in YOLO = brown/rotting roots)
-- Crops individual roots from full images
-- Resizes to 224x224 pixels
-- Saves classified images to `ml/data/raw/healthy/` and `ml/data/raw/diseased/`
-
-**Expected output:**
-```
-LettuCeV Dataset Converter
-✅ 651 images processed
-✅ Healthy: 320+ images
-✅ Diseased: 280+ images
 ```
 
 ---
