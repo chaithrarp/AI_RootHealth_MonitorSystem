@@ -40,11 +40,58 @@ npm --version
 
 ## ⚙️ PART 1: One-Time Setup
 
-### Step 1: Clone/Extract the Project
+### Step 1: Clone the Project from GitHub
 
 ```bash
+# Clone the repository
+git clone https://github.com/chaithrarp/AI_RootHealth_MonitorSystem.git
+
 # Navigate to the project directory
-cd path/to/AI_Root_HealthMonitor
+cd AI_Root_HealthMonitor
+```
+
+**Note**: Make sure you have [Git](https://git-scm.com/) installed on your system.
+
+### Step 2: Create Virtual Environment (Backend & ML)
+
+```bash
+# Create a Python virtual environment
+python -m venv venv310
+
+# Activate it
+# On Windows:
+venv310\Scripts\activate
+
+# On Mac/Linux:
+source venv310/bin/activate
+```
+
+### Step 3: Install Backend & ML Dependencies
+
+```bash
+# Install PyTorch (choose ONE based on your system)
+
+# If you have an NVIDIA GPU:
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+
+# If you only have CPU:
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+
+# Then install all other dependencies:
+pip install -r requirements.txt
+```
+
+### Step 4: Install Frontend Dependencies
+
+```bash
+# Navigate to frontend folder
+cd frontend
+
+# Install Node packages
+npm install
+
+# Return to root
+cd ..
 ```
 
 ### Step 2: Create Virtual Environment (Backend & ML)
