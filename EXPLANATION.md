@@ -45,11 +45,11 @@ This is a **binary classification** problem: The AI answers YES (healthy) or NO 
 The model learned **visual features** that distinguish healthy from diseased roots:
 
 | Feature | Healthy Roots | Diseased Roots |
-|---------|--------------|----------------|
+|---------|---------------|----------------|
 | **Color** | Bright white to cream | Brown, dark, mottled |
-| **Surface** | Smooth, intact | Slimy, coated, rough |
+| **Surface Texture** | Smooth, intact | Slimy, coated, rough |
 | **Root Tips** | Sharp, well-defined | Blunt, discolored, necrotic |
-| **Consistency** | Firm appearance | Soft/mushy appearance |
+| **Structure** | Firm appearance | Soft, mushy appearance |
 
 #### Step 3: Prediction Time (What Happens Now)
 When you upload an image:
@@ -155,13 +155,13 @@ The model distinguishes between these!
 
 When you toggle "Enable Sensor Data" in the frontend, you can adjust 5 sliders:
 
-| Sensor | Unit | Range | Healthy Window | What It Measures |
-|--------|------|-------|-----------------|-----------------|
-| **pH** | - | 0-14 | **5.5-7.0** | Acidity/alkalinity of water |
-| **TDS** | ppm | 0-5000 | **500-1500** | Total dissolved solids (nutrients) |
-| **Water Temp** | °C | 0-40 | **18-24** | Hydroponic system temperature |
-| **Humidity** | % | 0-100 | **50-80** | Air moisture around plants |
-| **Dissolved Oxygen** | mg/L | 0-20 | **6-10** | Oxygen in the water (critical!) |
+| Sensor | Unit | Range | Optimal Range | Description |
+|--------|------|-------|---------------|-------------|
+| **pH** | - | 0–14 | 5.5–7.0 | Water acidity (critical for nutrient uptake) |
+| **TDS** | ppm | 0–5000 | 500–1500 | Total nutrients dissolved in water |
+| **Water Temp** | °C | 0–40 | 18–24 | Hydroponic system temperature |
+| **Humidity** | % | 0–100 | 50–80 | Air moisture level around plants |
+| **Dissolved Oxygen** | mg/L | 0–20 | 6–10 | Oxygen availability in water (very important!) |
 
 ### Are These Hardcoded? YES — With a Reason
 
@@ -511,12 +511,12 @@ This enables:
 
 | Component | Purpose | Hardcoded? |
 |-----------|---------|-----------|
-| **Image Classification** | Uses trained EfficientNet on 650 root images | No — learned from data |
-| **Default Sensor Values** | Show optimal hydroponics ranges | Yes — education/demo |
-| **Sensor Model** | Predicts from water chemistry conditions | No — learned from data |
-| **Healthy Root Definition** | Model consensus on 650+ labeled examples | No — learned from data |
-| **Browning Logic** | Part of learned pattern; not a simple rule | No — context-dependent |
-| **Fusion Weighting** | FusionHead learns how to combine scores | No — learned training |
+| Image Classification | EfficientNet trained on 650+ images | No |
+| Default Sensor Values | Demo values showing optimal ranges | Yes |
+| Sensor Model | Predicts disease risk from water chemistry | No |
+| Healthy Root Definition | Learned pattern from 650+ labeled examples | No |
+| Browning Logic | Context-dependent learned pattern | No |
+| Fusion Weighting | FusionHead combines image + sensor scores | No |
 
 Everything the system "knows" comes from **training on real data** — nothing is hardcoded except the demo sensor values!
 
