@@ -1,0 +1,1 @@
+{"features": ["pH", "TDS", "water_temp", "humidity", "dissolved_oxygen"], "n_features": 5, "n_classes": 2, "classes": ["healthy", "diseased"]}

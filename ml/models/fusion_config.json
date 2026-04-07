@@ -1,0 +1,1 @@
+{"image_model": "best_model_finetuned.pt", "sensor_model": "sensor_model.pt", "fusion_head": "fusion_head.pt", "sensor_scaler": "sensor_scaler.pkl", "features": ["pH", "TDS", "water_temp", "humidity", "dissolved_oxygen"], "classes": ["diseased", "healthy"], "class_to_idx": {"diseased": 0, "healthy": 1}}
