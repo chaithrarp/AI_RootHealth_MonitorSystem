@@ -1,5 +1,4 @@
 // frontend/src/components/PredictionCard.tsx
-// Drop-in replacement — no prop changes, no new dependencies beyond framer-motion + lucide
 
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence, useAnimation } from 'framer-motion'
@@ -103,7 +102,7 @@ const AnnotationArrow = ({
   delay,
 }: {
   label: string
-  fromX: number; fromY: number   // % within the image container
+  fromX: number; fromY: number
   toX: number;   toY: number
   color: string
   delay: number
@@ -482,6 +481,70 @@ const ReasonItem = ({
   )
 }
 
+// ─── Verdict icon with mount animation ────────────────────────────────────────
+// useRef tracks whether the entrance sequence has already run (prevents re-firing
+// on re-renders). useAnimation drives a two-phase sequence: immediate glow burst
+// on mount → settle into the gentle continuous pulse that runs forever after.
+const VerdictIcon = ({
+  isHealthy,
+  accentColor,
+}: {
+  isHealthy: boolean
+  accentColor: string
+}) => {
+  const hasAnimated = useRef(false)
+  const ringControls = useAnimation()
+  const iconControls = useAnimation()
+
+  useEffect(() => {
+    if (hasAnimated.current) return
+    hasAnimated.current = true
+
+    // Phase 1: entrance burst — ring expands rapidly then fades
+    ringControls.start({
+      scale: [1, 2.4, 1.5],
+      opacity: [0.8, 0.4, 0],
+      transition: { duration: 0.9, ease: [0.22, 1, 0.36, 1] },
+    })
+
+    // Phase 1b: icon snaps in with a slight overshoot
+    iconControls.start({
+      scale: [0, 1.2, 1],
+      opacity: [0, 1, 1],
+      transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
+    }).then(() => {
+      // Phase 2: settle into the slow continuous pulse (runs forever)
+      ringControls.start({
+        scale: [1, 1.5, 1],
+        opacity: [0.5, 0, 0.5],
+        transition: { duration: 2.8, repeat: Infinity, ease: 'easeInOut' },
+      })
+    })
+  }, [ringControls, iconControls])
+
+  return (
+    <div className="relative flex items-center justify-center w-9 h-9">
+      {/* animated ring — burst on mount, pulse forever after */}
+      <motion.div
+        animate={ringControls}
+        className="absolute rounded-full"
+        style={{
+          width: 36,
+          height: 36,
+          background: `${accentColor}14`,
+        }}
+      />
+      {/* icon — snaps in with overshoot */}
+      <motion.div animate={iconControls} initial={{ scale: 0, opacity: 0 }}>
+        {isHealthy
+          ? <CheckCircle size={20} style={{ color: accentColor }} />
+          : <AlertTriangle size={20} style={{ color: accentColor }} />
+        }
+      </motion.div>
+    </div>
+  )
+}
+
 // ─── Main component ────────────────────────────────────────────────────────────
 interface PredictionCardProps {
   result:           PredictionResponse
@@ -516,18 +579,9 @@ export const PredictionCard = ({ result, originalPreview }: PredictionCardProps)
         }}
       >
         <div className="flex items-center gap-4">
-          <div className="relative flex items-center justify-center">
-            <motion.div
-              className="absolute rounded-full"
-              style={{ width: 36, height: 36, background: `${accentColor}14` }}
-              animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
-              transition={{ duration: 2.8, repeat: Infinity }}
-            />
-            {isHealthy
-              ? <CheckCircle size={20} style={{ color: accentColor }} />
-              : <AlertTriangle size={20} style={{ color: accentColor }} />
-            }
-          </div>
+          {/* VerdictIcon uses useRef + useAnimation for the burst-then-pulse sequence */}
+          <VerdictIcon isHealthy={isHealthy} accentColor={accentColor} />
+
           <div className="flex flex-col">
             <span className="text-xs tracking-[0.2em] uppercase" style={{ color: '#E8E0D0', opacity: 0.35 }}>
               Diagnosis result
