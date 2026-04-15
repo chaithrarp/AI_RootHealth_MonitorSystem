@@ -18,10 +18,12 @@ export const Predict = () => {
   const [sensors, setSensors]       = useState<SensorInput>(DEFAULT_SENSORS)
   const [dragging, setDragging]     = useState(false)
   const { ref: headerRef, isVisible: headerVisible } = useScrollReveal({ threshold: 0.1 })
+  const [useImage, setUseImage] = useState(true)
 
   const handleFile = (file: File) => {
     setImage(file)
     setPreview(URL.createObjectURL(file))
+    setSensors(DEFAULT_SENSORS)
     reset()
   }
 
@@ -32,15 +34,56 @@ export const Predict = () => {
     if (file && file.type.startsWith('image/')) handleFile(file)
   }, [])
 
-  const clearImage = () => { setImage(null); setPreview(null); reset() }
-
-  const handleSubmit = async () => {
-    if (!image && !useSensors) return
-    await runPrediction(image, useSensors ? sensors : null)
+  const clearImage = () => { 
+    setImage(null)
+    setPreview(null)
+    setUseSensors(false)
+    setSensors(DEFAULT_SENSORS)
+    reset() 
   }
 
-  const canSubmit = (image !== null || useSensors) && !loading
+  // healthy and diseased suggested sensor ranges
+  const getSuggestedSensors = (prediction: 'healthy' | 'diseased') => {
+    const rand = (base: number, range: number) =>
+      parseFloat((base + (Math.random() - 0.5) * range).toFixed(2))
 
+    if (prediction === 'healthy') {
+      return {
+        ph:               rand(6.1, 0.4),
+        tds:              rand(1100, 200),
+        water_temp:       rand(20.0, 2),
+        humidity:         rand(60, 8),
+        dissolved_oxygen: rand(8.5, 1),
+      }
+    } else {
+      return {
+        ph:               rand(7.4, 0.4),
+        tds:              rand(1800, 200),
+        water_temp:       rand(26.0, 2),
+        humidity:         rand(85, 6),
+        dissolved_oxygen: rand(4.0, 0.8),
+      }
+    }
+  }
+
+  const handleSubmit = async () => {
+    if (useImage && !image) return
+    if (!useImage && !useSensors) return
+
+    const data = await runPrediction(
+      useImage ? image : null,
+      useSensors ? sensors : null
+    )
+
+    // auto-suggest ONLY when image ON and sensor OFF
+    if (data && useImage && !useSensors) {
+      const key = data.prediction as 'healthy' | 'diseased'
+      setSensors(getSuggestedSensors(key))
+      setUseSensors(true)
+    }
+  }
+
+  const canSubmit = ((useImage && image !== null) || useSensors) && !loading
   return (
     <div className="min-h-screen pt-28 pb-32 px-6 md:px-12" style={{ background: '#0D0D0D' }}>
       <div className="max-w-2xl mx-auto flex flex-col gap-10">
@@ -149,6 +192,34 @@ export const Predict = () => {
           transition={{ duration: 0.7, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
           className="flex flex-col gap-4"
         >
+          {/* ── Image toggle ── */}
+          <button
+            onClick={() => setUseImage(v => !v)}
+            className="flex items-center justify-between rounded-xl px-5 py-4 transition-all duration-300"
+            style={{
+              background: useImage ? 'rgba(74,222,128,0.06)' : 'rgba(255,255,255,0.02)',
+              border:     `1px solid ${useImage ? 'rgba(74,222,128,0.25)' : 'rgba(255,255,255,0.06)'}`,
+              boxShadow:  useImage ? '0 0 20px rgba(74,222,128,0.06)' : 'none',
+            }}
+          >
+            <div className="flex items-center gap-3">
+              <Upload size={15} style={{ color: '#4ADE80' }} />
+              <span className="text-sm tracking-widest uppercase" style={{ color: '#E8E0D0' }}>
+                Include Image
+              </span>
+            </div>
+            <div
+              className="w-10 h-5 rounded-full relative transition-colors duration-300"
+              style={{ background: useImage ? '#4ADE80' : 'rgba(255,255,255,0.1)' }}
+            >
+              <motion.div
+                className="absolute top-0.5 w-4 h-4 rounded-full"
+                style={{ background: '#0D0D0D' }}
+                animate={{ left: useImage ? '22px' : '2px' }}
+                transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+              />
+            </div>
+          </button> 
           <button
             onClick={() => setUseSensors(v => !v)}
             className="flex items-center justify-between rounded-xl px-5 py-4 transition-all duration-300"
@@ -176,6 +247,7 @@ export const Predict = () => {
               />
             </div>
           </button>
+
 
           <AnimatePresence>
             {useSensors && (

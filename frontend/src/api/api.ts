@@ -26,11 +26,8 @@ export const predict = async (
   }
 
   if (sensors) {
-    // Append each sensor value individually as the backend expects
-    Object.entries(sensors).forEach(([key, value]) => {
-      form.append(key, String(value))
-    })
-  }
+  form.append('sensor_data', JSON.stringify(sensors))
+}
 
   const res = await client.post<PredictionResponse>('/predict', form, {
     headers: { 'Content-Type': 'multipart/form-data' },

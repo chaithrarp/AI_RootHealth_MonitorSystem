@@ -25,7 +25,7 @@ class Prediction(Base):
     # results
     prediction       = Column(String, nullable=False)
     confidence       = Column(Float,  nullable=False)
-    image_score      = Column(Float,  nullable=False)
+    image_score      = Column(Float,  nullable=True)
     sensor_score     = Column(Float,  nullable=True)
     prob_healthy  = Column(Float, nullable=True)
     prob_diseased = Column(Float, nullable=True)

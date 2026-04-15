@@ -177,7 +177,7 @@ export const History = () => {
                         {r.mode.replace('_', ' ')}
                       </span>
                       <span className="hidden md:block tabular-nums text-xs" style={{ color: '#E8E0D0', opacity: 0.4 }}>
-                        {Math.round(r.image_score * 100)}%
+                        {r.image_score != null ? `${Math.round(r.image_score * 100)}%` : '—'}
                       </span>
                       <span className="text-xs" style={{ color: '#E8E0D0', opacity: 0.35 }}>
                         {new Date(r.timestamp).toLocaleDateString()}

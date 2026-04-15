@@ -11,7 +11,7 @@ router = APIRouter()
 
 @router.post("/predict", response_model=PredictionResponse)
 async def predict(
-    image       : UploadFile       = File(..., description="Root image (JPG/PNG)"),
+    image : Optional[UploadFile] = File(None, description="Root image (JPG/PNG)"),
     sensor_data : Optional[str]    = Form(None, description="JSON sensor readings"),
     db          : Session          = Depends(get_db)
 ):

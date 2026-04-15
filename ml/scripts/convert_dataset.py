@@ -24,8 +24,8 @@ import numpy as np
 from pathlib import Path
 
 # ── CONFIG — UPDATE THESE PATHS ─────────────────────────
-DATASET_DIR = Path(r"C:\Users\Chait\Downloads\LettuCeV_dataset")
-OUTPUT_DIR  = Path(r"C:\Users\Chait\Desktop\AI_Root_HealthMonitor\ml\data\raw")
+DATASET_DIR = Path(r"C:\Users\sshre\Downloads\LettuCeV_dataset")
+OUTPUT_DIR  = Path(r"C:\dev\AI_RootHealth_MonitorSystem\ml\data\raw")
 IMAGE_SIZE  = 224   # Final size for EfficientNet
 
 # Class mapping confirmed from visual inspection

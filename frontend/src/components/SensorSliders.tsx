@@ -10,20 +10,20 @@ const SLIDERS: {
   max:   number
   step:  number
 }[] = [
-  { key: 'ph',                     label: 'pH',                      unit: '',      min: 0,  max: 14,   step: 0.1  },
-  { key: 'temperature',            label: 'Temperature',             unit: '°C',    min: 0,  max: 40,   step: 0.1  },
-  { key: 'dissolved_oxygen',       label: 'Dissolved Oxygen',        unit: 'mg/L',  min: 0,  max: 20,   step: 0.1  },
-  { key: 'electrical_conductivity',label: 'Electrical Conductivity', unit: 'mS/cm', min: 0,  max: 5,    step: 0.01 },
-  { key: 'turbidity',              label: 'Turbidity',               unit: 'NTU',   min: 0,  max: 1000, step: 1    },
+  { key: 'ph',               label: 'pH',               unit: '',      min: 3,  max: 10,  step: 0.1 },
+  { key: 'tds',              label: 'TDS',              unit: 'ppm',   min: 0,  max: 5000, step: 1  },
+  { key: 'water_temp',       label: 'Water Temp',       unit: '°C',    min: 5,  max: 45,  step: 0.1 },
+  { key: 'humidity',         label: 'Humidity',         unit: '%',     min: 0,  max: 100, step: 1   },
+  { key: 'dissolved_oxygen', label: 'Dissolved Oxygen', unit: 'mg/L',  min: 0,  max: 20,  step: 0.1 },
 ]
 
 // ─── Default sensor values ────────────────────────────────────────────────────
 export const DEFAULT_SENSORS: SensorInput = {
-  ph:                      6.5,
-  temperature:             22,
-  dissolved_oxygen:        8,
-  electrical_conductivity: 1.5,
-  turbidity:               50,
+   ph:               6.1,
+  tds:              1100,
+  water_temp:       20.0,
+  humidity:         60,
+  dissolved_oxygen: 8.5,
 }
 
 // ─── Props ────────────────────────────────────────────────────────────────────

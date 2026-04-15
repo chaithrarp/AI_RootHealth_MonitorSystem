@@ -206,6 +206,7 @@ class RootHealthPredictor:
             cfg = json.load(f)
         self.class_to_idx = cfg["class_to_idx"]
         self.idx_to_class = {v: k for k, v in self.class_to_idx.items()}
+        self.sensor_class_to_idx = {"healthy": 0, "diseased": 1}
 
         self.image_model = build_image_model()
         self.image_model.load_state_dict(torch.load(
@@ -301,26 +302,79 @@ class RootHealthPredictor:
         with torch.no_grad():
             img_logits    = self.image_model(tensor)
             sensor_logits = self.sensor_model(sensor_tensor)
-            fusion_logits = self.fusion_head(img_logits, sensor_logits)
 
             img_probs    = torch.softmax(img_logits, dim=1)[0]
             sensor_probs = torch.softmax(sensor_logits, dim=1)[0]
-            fusion_probs = torch.softmax(fusion_logits, dim=1)[0]
+
+        # simple weighted average — 60% image, 40% sensor
+        d_idx = self.class_to_idx["diseased"]
+        h_idx = self.class_to_idx["healthy"]
+
+        # image model uses class_to_idx, sensor model uses sensor_class_to_idx
+        s_d_idx = self.sensor_class_to_idx["diseased"]
+        s_h_idx = self.sensor_class_to_idx["healthy"]
+
+        diseased_score = (img_probs[d_idx].item() * 0.6) + (sensor_probs[s_d_idx].item() * 0.4)
+        healthy_score  = (img_probs[h_idx].item() * 0.6) + (sensor_probs[s_h_idx].item() * 0.4)
+        prediction = "diseased" if diseased_score > healthy_score else "healthy"
+        confidence = round(max(diseased_score, healthy_score), 4)
+
+        fusion_result = {
+            "prediction": prediction,
+            "confidence": confidence,
+            "probabilities": {
+                "healthy":  round(healthy_score, 4),
+                "diseased": round(diseased_score, 4),
+            }
+        }
 
         d_idx  = self.class_to_idx["diseased"]
-        result = self._parse_probs(fusion_probs)
+        result = fusion_result
         pred_class_idx = self.class_to_idx[result["prediction"]]
 
         result["image_score"]         = round(img_probs[d_idx].item(), 4)
-        result["sensor_score"]        = round(sensor_probs[d_idx].item(), 4)
+        result["sensor_score"] = round(sensor_probs[s_d_idx].item(), 4)
         result["mode"]                = "fusion"
         result["gradcam_overlay"]     = self._run_gradcam(image_bytes, pred_class_idx)
-        result["sensor_attributions"] = _sensor_attribution(sensor, sensor_probs, self.class_to_idx)
+        result["sensor_attributions"] = _sensor_attribution(sensor, sensor_probs, self.sensor_class_to_idx)
 
         logger.info(
             f"Fusion → {result['prediction']} ({result['confidence']:.2%}) | "
             f"img={result['image_score']:.2f} sensor={result['sensor_score']:.2f}"
         )
+        return result
+    
+    def predict_sensor_only(self, sensor: dict) -> dict:
+        sensor_arr = np.array([[
+            sensor["ph"], sensor["tds"], sensor["water_temp"],
+            sensor["humidity"], sensor["dissolved_oxygen"]
+        ]])
+        sensor_scaled = self.scaler.transform(sensor_arr)
+        sensor_tensor = torch.tensor(sensor_scaled, dtype=torch.float32).to(DEVICE)
+
+        with torch.no_grad():
+            sensor_logits = self.sensor_model(sensor_tensor)
+            sensor_probs  = torch.softmax(sensor_logits, dim=1)[0]
+
+        # use sensor-specific indices for parsing
+        d_idx = self.sensor_class_to_idx["diseased"]
+        h_idx = self.sensor_class_to_idx["healthy"]
+        pred_idx = sensor_probs.argmax().item()
+        result = {
+            "prediction": "diseased" if pred_idx == d_idx else "healthy",
+            "confidence": round(sensor_probs[pred_idx].item(), 4),
+            "probabilities": {
+                "healthy":  round(sensor_probs[h_idx].item(), 4),
+                "diseased": round(sensor_probs[d_idx].item(), 4),
+            }
+        }
+        result["image_score"]         = None
+        result["sensor_score"] = round(sensor_probs[self.sensor_class_to_idx["diseased"]].item(), 4)
+        result["mode"]                = "sensor_only"
+        result["gradcam_overlay"]     = None
+        result["sensor_attributions"] = _sensor_attribution(sensor, sensor_probs, self.sensor_class_to_idx)
+
+        logger.info(f"Sensor-only → {result['prediction']} ({result['confidence']:.2%})")
         return result
 
 

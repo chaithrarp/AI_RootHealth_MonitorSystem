@@ -154,7 +154,7 @@ optimizer = optim.AdamW(
 )
 # reduce LR by 0.5 if val loss doesn't improve for 3 epochs
 scheduler = optim.lr_scheduler.ReduceLROnPlateau(
-    optimizer, mode="min", factor=0.5, patience=3, verbose=True
+    optimizer, mode="min", factor=0.5, patience=3
 )
 
 # ─────────────────────────────────────────────

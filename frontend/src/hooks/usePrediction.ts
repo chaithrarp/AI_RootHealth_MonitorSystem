@@ -7,7 +7,7 @@ interface UsePredictionReturn {
   result: PredictionResponse | null
   loading: boolean
   error: string | null
-  runPrediction: (image: File | null, sensors: SensorInput | null) => Promise<void>
+  runPrediction: (image: File | null, sensors: SensorInput | null) => Promise<PredictionResponse | null>
   reset: () => void
 }
 
@@ -33,12 +33,14 @@ export const usePrediction = (): UsePredictionReturn => {
 
       const data = await predict(image, sensorsPayload)
       setResult(data)
+      return data
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message)
       } else {
         setError('Prediction failed. Check your backend connection.')
       }
+      return null
     } finally {
       setLoading(false)
     }

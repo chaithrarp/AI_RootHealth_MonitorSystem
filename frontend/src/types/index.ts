@@ -34,11 +34,11 @@ export interface PredictionResponse {
 
 // ─── Sensor Readings (embedded in history records) ──────────────────────────
 export interface SensorReadings {
-  ph:                      number
-  temperature:             number
-  dissolved_oxygen:        number
-  electrical_conductivity: number
-  turbidity:               number
+  ph:               number | null
+  tds:              number | null
+  water_temp:       number | null
+  humidity:         number | null
+  dissolved_oxygen: number | null
 }
 
 // ─── History Record (from GET /api/v1/history) ──────────────────────────────
@@ -64,12 +64,20 @@ export interface HistoryStats {
 }
 
 // ─── Sensor Input ─────────────────────────────────────────────────────────────
+// export interface SensorInput {
+//   ph:                      number
+//   temperature:             number
+//   dissolved_oxygen:        number
+//   electrical_conductivity: number
+//   turbidity:               number
+// }
+
 export interface SensorInput {
-  ph:                      number
-  temperature:             number
-  dissolved_oxygen:        number
-  electrical_conductivity: number
-  turbidity:               number
+  ph:               number
+  tds:              number
+  water_temp:       number
+  humidity:         number
+  dissolved_oxygen: number
 }
 
 // ─── Predict Form State ───────────────────────────────────────────────────────

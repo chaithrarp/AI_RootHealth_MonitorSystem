@@ -48,7 +48,7 @@ class PredictionResponse(BaseModel):
     id:            int
     prediction:    str
     confidence:    float
-    image_score:   float
+    image_score:   Optional[float]
     sensor_score:  Optional[float]
     probabilities: Probabilities
     mode:          str
@@ -74,8 +74,8 @@ class HistoryRecord(BaseModel):
     id:            int
     prediction:    str
     confidence:    float
-    image_score:   float
-    sensor_score:  Optional[float]
+    image_score: Optional[float] = None   # ← fix
+    sensor_score: Optional[float] = None
     probabilities: Probabilities
     mode:          str
     timestamp:     datetime
